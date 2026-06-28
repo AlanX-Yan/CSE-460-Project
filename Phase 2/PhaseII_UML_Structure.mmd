@@ -1,0 +1,370 @@
+classDiagram
+direction LR
+
+class LoginPage {
+  <<boundary>>
+  -email : String
+  -password : String
+  +displayLoginForm() void
+  +submitLogin(email : String, password : String) void
+  +showLoginError(message : String) void
+}
+
+class EventSearchPage {
+  <<boundary>>
+  -searchText : String
+  -selectedCategory : String
+  -selectedDate : Date
+  +searchEvents(keyword : String) List~Event~
+  +applyFilters(category : String, date : Date, location : String) List~Event~
+  +displayEvents(events : List~Event~) void
+}
+
+class EventDetailsPage {
+  <<boundary>>
+  -selectedEventId : String
+  +displayEventDetails(eventId : String) void
+  +registerForEvent(studentId : String, eventId : String) void
+  +cancelRegistration(studentId : String, eventId : String) void
+}
+
+class ClubPage {
+  <<boundary>>
+  -selectedClubId : String
+  +displayClub(clubId : String) void
+  +joinClub(studentId : String, clubId : String) void
+  +displayAnnouncements(clubId : String) void
+}
+
+class ClubDashboardPage {
+  <<boundary>>
+  -leaderId : String
+  -selectedClubId : String
+  +createEvent(eventData : EventData) void
+  +updateEvent(eventId : String, eventData : EventData) void
+  +approveMember(membershipId : String) void
+  +postAnnouncement(clubId : String, message : String) void
+}
+
+class AdminPanelPage {
+  <<boundary>>
+  -adminId : String
+  +approveClub(clubId : String) void
+  +reviewFlaggedContent(contentId : String) void
+  +removeFlaggedContent(contentId : String) void
+}
+
+class SunDevilConnectFacade {
+  <<control>>
+  -authController : AuthController
+  -eventController : EventController
+  -clubController : ClubController
+  -adminController : AdminController
+  +login(email : String, password : String) User
+  +browseEvents(filter : EventFilter) List~Event~
+  +viewEventDetails(eventId : String) Event
+  +registerForEvent(studentId : String, eventId : String) EventRegistration
+  +cancelEventRegistration(registrationId : String) void
+  +viewClub(clubId : String) Club
+  +joinClub(studentId : String, clubId : String) ClubMembership
+  +executeCommand(command : DashboardCommand) void
+}
+
+class AuthController {
+  <<control>>
+  -users : List~User~
+  +authenticate(email : String, password : String) User
+  +authorize(user : User, action : String) boolean
+  +logout(userId : String) void
+}
+
+class EventController {
+  <<control>>
+  -events : List~Event~
+  -registrations : List~EventRegistration~
+  +searchEvents(filter : EventFilter) List~Event~
+  +getEventDetails(eventId : String) Event
+  +registerStudent(student : Student, event : Event) EventRegistration
+  +cancelRegistration(registrationId : String) void
+  +createEvent(eventData : EventData) Event
+  +updateEvent(eventId : String, eventData : EventData) void
+}
+
+class ClubController {
+  <<control>>
+  -clubs : List~Club~
+  -memberships : List~ClubMembership~
+  +getClub(clubId : String) Club
+  +requestMembership(student : Student, club : Club) ClubMembership
+  +approveMembership(membershipId : String) void
+  +postAnnouncement(clubId : String, message : String) Announcement
+}
+
+class AdminController {
+  <<control>>
+  -flaggedItems : List~FlaggedContent~
+  +approveClub(clubId : String) void
+  +reviewFlaggedContent(contentId : String) FlaggedContent
+  +removeFlaggedContent(contentId : String) void
+  +suspendClub(clubId : String) void
+}
+
+class User {
+  <<entity>>
+  #userId : String
+  #name : String
+  #email : String
+  #passwordHash : String
+  +login() void
+  +logout() void
+  +updateProfile(name : String, email : String) void
+}
+
+class Student {
+  <<entity>>
+  -major : String
+  -graduationYear : int
+  +browseEvents(filter : EventFilter) List~Event~
+  +registerForEvent(event : Event) EventRegistration
+  +cancelRegistration(registration : EventRegistration) void
+  +joinClub(club : Club) ClubMembership
+}
+
+class ClubLeader {
+  <<entity>>
+  -managedClubIds : List~String~
+  +createEvent(club : Club, eventData : EventData) Event
+  +updateEvent(event : Event, eventData : EventData) void
+  +approveMember(membership : ClubMembership) void
+  +postAnnouncement(club : Club, message : String) Announcement
+}
+
+class Administrator {
+  <<entity>>
+  -adminLevel : String
+  +approveClub(club : Club) void
+  +reviewFlaggedContent(content : FlaggedContent) void
+  +removeContent(content : FlaggedContent) void
+}
+
+class Club {
+  <<entity>>
+  -clubId : String
+  -name : String
+  -description : String
+  -category : String
+  -status : String
+  +addEvent(event : Event) void
+  +removeEvent(eventId : String) void
+  +addMember(membership : ClubMembership) void
+  +postAnnouncement(announcement : Announcement) void
+}
+
+class Event {
+  <<entity>>
+  -eventId : String
+  -title : String
+  -description : String
+  -category : String
+  -dateTime : Date
+  -location : String
+  -capacity : int
+  -registrationCount : int
+  -fee : double
+  -currentState : EventState
+  +publish() void
+  +registerStudent(student : Student) EventRegistration
+  +cancel() void
+  +updateDetails(eventData : EventData) void
+  +setState(state : EventState) void
+  +isFull() boolean
+}
+
+class ClubMembership {
+  <<entity>>
+  -membershipId : String
+  -studentId : String
+  -clubId : String
+  -status : String
+  -requestDate : Date
+  +approve() void
+  +reject() void
+  +cancel() void
+}
+
+class EventRegistration {
+  <<entity>>
+  -registrationId : String
+  -studentId : String
+  -eventId : String
+  -registrationDate : Date
+  -status : String
+  +confirm() void
+  +cancel() void
+  +markAttended() void
+}
+
+class Announcement {
+  <<entity>>
+  -announcementId : String
+  -clubId : String
+  -title : String
+  -message : String
+  -postedDate : Date
+  +publish() void
+  +edit(message : String) void
+  +archive() void
+}
+
+class FlaggedContent {
+  <<entity>>
+  -contentId : String
+  -reporterId : String
+  -reason : String
+  -status : String
+  -reportedDate : Date
+  +markReviewed() void
+  +remove() void
+  +dismiss() void
+}
+
+class EventState {
+  <<interface>>
+  +publish(event : Event) void
+  +registerStudent(event : Event, student : Student) EventRegistration
+  +cancel(event : Event) void
+  +updateDetails(event : Event, eventData : EventData) void
+}
+
+class DraftEventState {
+  +publish(event : Event) void
+  +registerStudent(event : Event, student : Student) EventRegistration
+  +cancel(event : Event) void
+  +updateDetails(event : Event, eventData : EventData) void
+}
+
+class PublishedEventState {
+  +publish(event : Event) void
+  +registerStudent(event : Event, student : Student) EventRegistration
+  +cancel(event : Event) void
+  +updateDetails(event : Event, eventData : EventData) void
+}
+
+class FullEventState {
+  +publish(event : Event) void
+  +registerStudent(event : Event, student : Student) EventRegistration
+  +cancel(event : Event) void
+  +updateDetails(event : Event, eventData : EventData) void
+}
+
+class CancelledEventState {
+  +publish(event : Event) void
+  +registerStudent(event : Event, student : Student) EventRegistration
+  +cancel(event : Event) void
+  +updateDetails(event : Event, eventData : EventData) void
+}
+
+class DashboardCommand {
+  <<interface>>
+  +execute() void
+  +getCommandName() String
+}
+
+class CreateEventCommand {
+  -leader : ClubLeader
+  -club : Club
+  -eventData : EventData
+  -eventController : EventController
+  +execute() void
+  +getCommandName() String
+}
+
+class UpdateEventCommand {
+  -leader : ClubLeader
+  -event : Event
+  -eventData : EventData
+  -eventController : EventController
+  +execute() void
+  +getCommandName() String
+}
+
+class ApproveMemberCommand {
+  -leader : ClubLeader
+  -membership : ClubMembership
+  -clubController : ClubController
+  +execute() void
+  +getCommandName() String
+}
+
+class PostAnnouncementCommand {
+  -leader : ClubLeader
+  -club : Club
+  -message : String
+  -clubController : ClubController
+  +execute() void
+  +getCommandName() String
+}
+
+class ReviewFlaggedContentCommand {
+  -administrator : Administrator
+  -flaggedContent : FlaggedContent
+  -decision : String
+  -adminController : AdminController
+  +execute() void
+  +getCommandName() String
+}
+
+User <|-- Student
+User <|-- ClubLeader
+User <|-- Administrator
+
+LoginPage ..> SunDevilConnectFacade
+EventSearchPage ..> SunDevilConnectFacade
+EventDetailsPage ..> SunDevilConnectFacade
+ClubPage ..> SunDevilConnectFacade
+ClubDashboardPage ..> SunDevilConnectFacade
+AdminPanelPage ..> SunDevilConnectFacade
+
+SunDevilConnectFacade --> AuthController
+SunDevilConnectFacade --> EventController
+SunDevilConnectFacade --> ClubController
+SunDevilConnectFacade --> AdminController
+SunDevilConnectFacade ..> DashboardCommand
+
+AuthController --> User
+EventController --> Event
+EventController --> EventRegistration
+ClubController --> Club
+ClubController --> ClubMembership
+ClubController --> Announcement
+AdminController --> Club
+AdminController --> FlaggedContent
+
+ClubLeader "1" --> "0..*" Club : manages
+Club "1" *-- "0..*" Event : owns
+Club "1" *-- "0..*" Announcement : posts
+Club "1" o-- "0..*" ClubMembership : has
+Student "1" --> "0..*" ClubMembership : requests
+Student "1" --> "0..*" EventRegistration : makes
+Event "1" --> "0..*" EventRegistration : receives
+Administrator "1" --> "0..*" FlaggedContent : reviews
+
+Event --> EventState : currentState
+EventState <|.. DraftEventState
+EventState <|.. PublishedEventState
+EventState <|.. FullEventState
+EventState <|.. CancelledEventState
+
+DashboardCommand <|.. CreateEventCommand
+DashboardCommand <|.. UpdateEventCommand
+DashboardCommand <|.. ApproveMemberCommand
+DashboardCommand <|.. PostAnnouncementCommand
+DashboardCommand <|.. ReviewFlaggedContentCommand
+
+ClubDashboardPage ..> DashboardCommand
+AdminPanelPage ..> DashboardCommand
+CreateEventCommand --> EventController
+UpdateEventCommand --> EventController
+ApproveMemberCommand --> ClubController
+PostAnnouncementCommand --> ClubController
+ReviewFlaggedContentCommand --> AdminController

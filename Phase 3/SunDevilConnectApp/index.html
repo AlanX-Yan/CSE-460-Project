@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SunDevil Connect</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">SC</div>
+        <div>
+          <h1>SunDevil Connect</h1>
+          <p>Campus clubs, events, and student engagement in one workspace.</p>
+        </div>
+      </div>
+      <div class="profile-switcher" aria-label="Active role">
+        <label for="roleSelect">View as</label>
+        <select id="roleSelect">
+          <option value="student">Student</option>
+          <option value="leader">Club Leader</option>
+          <option value="admin">Administrator</option>
+        </select>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="hero-band">
+        <img src="assets/campus-events-banner.png" alt="Illustration of students gathering around campus event boards" />
+        <div class="hero-copy">
+          <h2>Discover what is happening at ASU</h2>
+          <p>Browse events, join clubs, and manage student organization activity through one role-aware app.</p>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Primary views">
+        <button class="tab is-active" data-view="studentView">Student</button>
+        <button class="tab" data-view="leaderView">Club Leader</button>
+        <button class="tab" data-view="adminView">Admin</button>
+      </nav>
+
+      <section id="studentView" class="view is-active">
+        <div class="toolbar">
+          <div class="field">
+            <label for="searchInput">Search</label>
+            <input id="searchInput" type="search" placeholder="Search events or clubs" />
+          </div>
+          <div class="field">
+            <label for="categoryFilter">Category</label>
+            <select id="categoryFilter">
+              <option value="all">All categories</option>
+              <option value="Tech">Tech</option>
+              <option value="Career">Career</option>
+              <option value="Music">Music</option>
+              <option value="Sports">Sports</option>
+              <option value="Social">Social</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="costFilter">Cost</label>
+            <select id="costFilter">
+              <option value="all">All</option>
+              <option value="free">Free</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sortFilter">Sort</label>
+            <select id="sortFilter">
+              <option value="date">Soonest</option>
+              <option value="popular">Most popular</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <section>
+            <div class="section-heading">
+              <h3>Upcoming Events</h3>
+              <span id="eventCount" class="count-pill">0</span>
+            </div>
+            <div id="eventList" class="card-grid"></div>
+          </section>
+
+          <aside>
+            <div class="section-heading">
+              <h3>Clubs</h3>
+            </div>
+            <div id="clubList" class="stack"></div>
+            <div class="panel">
+              <h3>My Activity</h3>
+              <div id="studentActivity" class="activity-list"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="leaderView" class="view">
+        <div class="content-grid leader-grid">
+          <section class="panel">
+            <h3>Create Event</h3>
+            <form id="createEventForm" class="form-grid">
+              <label>Title <input name="title" required placeholder="Workshop title" /></label>
+              <label>Category
+                <select name="category">
+                  <option>Tech</option>
+                  <option>Career</option>
+                  <option>Music</option>
+                  <option>Sports</option>
+                  <option>Social</option>
+                </select>
+              </label>
+              <label>Date <input name="date" type="date" required /></label>
+              <label>Location <input name="location" required placeholder="Tempe campus" /></label>
+              <label>Capacity <input name="capacity" type="number" min="1" value="40" required /></label>
+              <label>Fee <input name="fee" type="number" min="0" value="0" required /></label>
+              <label class="full">Description <textarea name="description" rows="3" required></textarea></label>
+              <button type="submit">Create Event</button>
+            </form>
+          </section>
+
+          <section class="panel">
+            <h3>Pending Memberships</h3>
+            <div id="membershipQueue" class="stack"></div>
+          </section>
+
+          <section class="panel">
+            <h3>Post Announcement</h3>
+            <form id="announcementForm" class="form-grid">
+              <label class="full">Message <textarea name="message" rows="4" required placeholder="Share a club update"></textarea></label>
+              <button type="submit">Post Announcement</button>
+            </form>
+            <div id="announcementList" class="activity-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="adminView" class="view">
+        <div class="content-grid">
+          <section class="panel">
+            <h3>Club Approvals</h3>
+            <div id="clubApprovals" class="stack"></div>
+          </section>
+          <section class="panel">
+            <h3>Flagged Content</h3>
+            <div id="flaggedContent" class="stack"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
